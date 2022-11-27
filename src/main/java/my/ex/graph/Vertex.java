@@ -3,15 +3,23 @@ package my.ex.graph;
 import java.util.*;
 
 public class Vertex {
-    private List<Edge> edges=new ArrayList<>();
+    private Integer id;
+    private Map<Vertex,Edge> edges=new HashMap<>();
+
+    public Vertex(Integer id) {
+        this.id = id;
+    }
+
+    public Vertex() {
+    }
 
     public boolean isConnected(Vertex vertex){
-        return edges.contains(vertex);
+        return edges.containsKey(vertex);
     }
 
     public Edge getEdge(Vertex vertex){
         if (!isConnected(vertex)) throw new RuntimeException();
-        return edges.stream().filter(x->x.getVertex().equals(vertex)).findFirst().get();
+        return edges.get(vertex);
     }
 
     public int edgeCount(){
@@ -19,19 +27,42 @@ public class Vertex {
     }
 
     public void addEdge(Vertex vertex, double width){
-        Edge e=new Edge(vertex, width);
-        edges.add(e);
+        if (!edges.containsKey(vertex)) {
+            edges.put(vertex, new Edge(vertex, width));
+            vertex.edges.put(this, new Edge(this, width));
+        }
     }
 
     public void destroy(){
-        for (Edge e:edges){
-            e.getVertex().edges.remove(new Edge(this, e.getWidth()));
+        for (Vertex v:edges.keySet()){
+            v.edges.remove(this);
         }
     }
 
     public void deleteEdge(Vertex vertex) {
-        for (int i=0; i<edges.size(); i++){
-            if (edges.get(i).getVertex().equals(vertex)) edges.remove(i);
+        edges.remove(vertex);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public List<Edge> getEdges() {
+        return new ArrayList<>(edges.values());
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder builder=new StringBuilder(id+"{\n");
+        for (Vertex v:edges.keySet()){
+            builder.append("\t").append(v.id).append("(").append(edges.get(v).getWidth()).append("),\n");
         }
+        builder.append("\n}");
+        return builder.toString();
     }
 }
