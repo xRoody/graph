@@ -84,7 +84,7 @@ public class MathGraph {
                     for (Integer i : keys) {
                         if (v.getId().equals(i)) builder.append("0");
                         else if (v.isConnected(graph.vertexMap.get(i)))
-                            builder.append(v.getEdge(graph.vertexMap.get(i)).getWidth());
+                            builder.append(v.getEdge(graph.vertexMap.get(i)).get().getWidth());
                         else builder.append("-");
                         builder.append(" | ");
                     }
@@ -145,9 +145,10 @@ public class MathGraph {
         BasicGraphParser.getInstant().writeMatrix(this, filePath);
     }
 
-    public void addVertex(Vertex vertex) {
+    public int addVertex(Vertex vertex) {
         vertex.setId(counter++);
         vertexMap.put(vertex.getId(), vertex);
+        return vertex.getId();
     }
 
     public void deleteVertex(Integer id) {
@@ -178,7 +179,7 @@ public class MathGraph {
     }
 
     public double getWeight(Integer start, Integer end) {
-        return vertexMap.get(start).getEdge(vertexMap.get(end)).getWidth();
+        return vertexMap.get(start).getEdge(vertexMap.get(end)).orElse(new Edge(null, -1)).getWidth();
     }
 
     public List<Vertex> getAllVertexes() {

@@ -17,9 +17,8 @@ public class Vertex {
         return edges.containsKey(vertex);
     }
 
-    public Edge getEdge(Vertex vertex){
-        if (!isConnected(vertex)) throw new RuntimeException();
-        return edges.get(vertex);
+    public Optional<Edge> getEdge(Vertex vertex){
+        return Optional.of(edges.get(vertex));
     }
 
     public int edgeCount(){
