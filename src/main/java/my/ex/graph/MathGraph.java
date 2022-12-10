@@ -1,7 +1,6 @@
 package my.ex.graph;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -179,13 +178,31 @@ public class MathGraph {
     }
 
     public double getWeight(Integer start, Integer end) {
-        return vertexMap.get(start).getEdge(vertexMap.get(end)).orElse(new Edge(null, -1)).getWidth();
+        return vertexMap.get(start).getEdge(vertexMap.get(end)).map(Edge::getWidth).orElse(-1.0);
     }
 
     public List<Vertex> getAllVertexes() {
         return new ArrayList<>(vertexMap.values());
     }
 
+    public RoadNode findTheShortestWay(int start, int end) {
+        Vertex endVertex=vertexMap.get(end);
+        PriorityQueue<RoadNode> roadNodes=new PriorityQueue<>(Comparator.comparingDouble(RoadNode::getWeight));
+        Set<Vertex> vertices=new HashSet<>();
+        roadNodes.add(new RoadNode(vertexMap.get(start)));
+        while (!roadNodes.isEmpty()){
+            RoadNode cur=roadNodes.poll();
+            if (vertices.contains(cur.getVertex())) continue;
+            if (cur.getVertex().equals(endVertex)){
+                return cur;
+            }
+            vertices.add(cur.getVertex());
+            for (Edge e:cur.getVertex().getEdges()){
+                roadNodes.add(new RoadNode(e.getWidth()+cur.getWeight(), cur, e.getVertex()));
+            }
+        }
+        return null;
+    }
     @Override
     public String toString() {
         return vertexMap.toString();
